@@ -1,6 +1,5 @@
 var http = require('http');
 var zlib = require("zlib");
-var fs = require("fs");
 var port = Number(process.env.PORT || 5000);
 var url = 'http://api.stackexchange.com/2.2/questions/707/answers?order=desc&sort=votes&site=meta.pt.stackoverflow&filter=!--pn9shUZ6Y2';
 
@@ -9,26 +8,25 @@ var url = 'http://api.stackexchange.com/2.2/questions/707/answers?order=desc&sor
  */
 function dados(cb) {
     var buffer = [];
-    http.get(url, function(jsonres){
+    http.get(url, function(res){
         var gunzip = zlib.createGunzip();            
-        jsonres.pipe(gunzip);
+        res.pipe(gunzip);
         gunzip.on('data', function(data) {
             buffer.push(data.toString())
         }).on("end", function() {
             cb(JSON.parse(buffer.join('')));
         }).on("error", function(e) {
-            console.log('ERRO NA REQUISICAO A API')
+            console.log('ERRO NA REQUISIÇÃO À API')
         });
     });
 }
 
 /**
- * Recebe objeto com as resposta e faz parse de cada uma delas.
+ * Recebe objeto com as respostas e faz parse de cada uma delas.
  * Retorna array de objetos no formato esperado pelo AutoReviewComments
  */
 function parseRespostas(resps) {
     var i, respostas = [];
-    console.log(typeof resps)
     for(i=0; i<resps.length; i++) {
         respostas.push(parseResposta(resps[i]));
     }
@@ -70,12 +68,7 @@ function jsonp(respostas) {
  */
 http.createServer(function (req, res) {
 
-    dados(function(json){
-        //fs.readFile('respostas.json', function (err, data) {
-        //    if (err) throw err;
-        //    res.writeHead(200, {'Content-Type': 'text/plain'});
-        //    res.end(jsonp(parseRespostas(JSON.parse(data).items)));
-        //});
+    dados(function(json){;
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end(jsonp(parseRespostas(json.items)));
     })
@@ -83,52 +76,3 @@ http.createServer(function (req, res) {
 
 }).listen(port, '127.0.0.1');
 console.log('Server running at http://127.0.0.1:' + port);
-
-
-
-
-/*
-var express = require("express");
-var logfmt = require("logfmt");
-var app = express();
-
-app.use(logfmt.requestLogger());
-
-app.get('/', function(req, res) {
-  res.send('Hello World!');
-});
-
-var port = Number(process.env.PORT || 5000);
-app.listen(port, function() {
-  console.log("Listening on " + port);
-});
-*/
-
-/*
-
-var url = 'http://api.stackexchange.com/2.2/questions/707/answers?order=desc&sort=activity&site=meta.pt.stackoverflow&filter=!--pn9shUZ6Y2';
-$.getJSON(url, function(json) {
-    //console.log(json)
-    var i, i, respostas = json.items;
-    var comentarios = [];
-    var prefixo, name, description = '';
-    for(i=0; i<respostas.length; i++) {
-        var linhas = respostas[i].body_markdown.split("\r\n");
-        for(j=0; j<linhas.length; j++) {
-            prefixo = linhas[j].substr(0, 4);
-            if(prefixo === '### ') {
-                name = linhas[j].substr(4);
-            } else if(prefixo === '    ') {
-                description += ' ' + linhas[j].substr(4);
-            }
-            // else ignore
-        }
-        comentarios.push({
-            name: name,
-            description: description
-        });
-    }
-    document.write("callback(" + JSON.stringify(comentarios) + ")");
-});
-
-*/
