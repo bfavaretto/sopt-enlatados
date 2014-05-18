@@ -1,0 +1,17 @@
+{
+  "name": "sopt-enlatados",
+  "version": "0.0.0",
+  "description": "Busca comentários enlatados do SOPT no meta e serve como JSONP para uso com a extensão AutoReviewComments",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bruno Favaretto",
+  "license": "ISC",
+  "dependencies": {
+
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
