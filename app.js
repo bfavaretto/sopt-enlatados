@@ -26,9 +26,10 @@ function dados(cb) {
  * Retorna array de objetos no formato esperado pelo AutoReviewComments
  */
 function parseRespostas(resps) {
-    var i, respostas = [];
+    var i, resp, respostas = [];
     for(i=0; i<resps.length; i++) {
-        respostas.push(parseResposta(resps[i]));
+        resp = parseResposta(resps[i]);
+        if(resp.name) respostas.push(resp);
     }
     return respostas;
 } 
@@ -41,12 +42,12 @@ function parseResposta(resp) {
     var prefixo, name, description = '';
     
     while(linhas.length) {
-        linha = linhas.shift()
+        linha = linhas.shift();
         prefixo = linha.substr(0, 4);
-        if(prefixo.substr(0,3) === '###') {
-            name = linha.substr(3);
-        } else if(prefixo === '    ') {
-            description += ' ' + linha.substr(4);
+        if(prefixo.substr(0, 3) === '###') {
+            name = linha.substr(3).trim();
+        } else if(prefixo === '&gt;') {
+            description += ' ' + linha.substr(4).trim();
         } // else ignore
     }
     
